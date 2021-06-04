@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <limits.h>
+#include "pipex.h"
+#include <string.h>
+
+extern char **(environ);
 
 void	panic(void)
 {
@@ -11,14 +15,56 @@ void	panic(void)
 	exit(1);
 }
 
-int		main(int ac, char **av)
+char	*find_path(void)
+{
+	int		i;
+
+	i = 0;
+	while (environ[i])
+	{
+		if (!ft_strncmp("PATH=", environ[i], 5))
+			return (environ[i] + 5);
+		i++;
+	}
+	return (NULL);
+}
+
+void	prep_exec(char *cmd, char **path)
+{
+	int		i;
+	char	**cmda;
+	char 	*str;
+	char	*tmp;
+
+	i = 0;
+	cmda = ft_split(cmd, ' ');
+	if (!cmda)
+		panic();
+	while (path[i])
+	{
+		tmp = ft_strjoin("/", cmda[0]);
+		str = ft_strjoin(path[i], str);
+		free(tmp);
+		printf("%s\n", str);
+		execve(str, cmda + 1, environ); 
+		perror(NULL);
+		free(str);
+		i++;
+	}
+}
+
+int	main(int ac, char **av)
 {
 	int		fds[2];
 	int		io[2];
+	char 	**path;
 
 	if (ac != 5)
 		exit(1);
-	printf("%d\n", PATH_MAX);
+	path = ft_split(find_path(), ':');
+	if (!path)
+		panic();
+	prep_exec(av[2], path);
 	io[0] = open(av[1], O_RDONLY);
 	if (io[0] < 0)
 		panic();
