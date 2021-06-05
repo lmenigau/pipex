@@ -1,8 +1,8 @@
 #include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 
 int main(int ac, char **av)
 {
-	execve(av[1], av, NULL);
-	perror(NULL);
+	write(1, "lol", strlen("lol"));
 }

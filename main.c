@@ -43,14 +43,13 @@ void	prep_exec(char *cmd, char **path)
 	while (path[i])
 	{
 		tmp = ft_strjoin("/", cmda[0]);
-		str = ft_strjoin(path[i], str);
+		str = ft_strjoin(path[i], tmp);
 		free(tmp);
-		printf("%s\n", str);
-		execve(str, cmda + 1, environ); 
-		perror(NULL);
+		execve(str, cmda, environ); 
 		free(str);
 		i++;
 	}
+	printf("%s\n", "command not found");
 }
 
 int	main(int ac, char **av)
@@ -59,17 +58,22 @@ int	main(int ac, char **av)
 	int		io[2];
 	char 	**path;
 
-	if (ac != 5)
+	if (ac < 5)
 		exit(1);
 	path = ft_split(find_path(), ':');
 	if (!path)
 		panic();
-	prep_exec(av[2], path);
-	io[0] = open(av[1], O_RDONLY);
-	if (io[0] < 0)
-		panic();
+	pipe(fds);
+	if (!fork())
+	{
+		io[0] = open(av[1], O_RDONLY);
+		if (io[0] < 0)
+			panic();
+		dup2(io[0], 0);
+		dup2(fds[0], 1);
+		prep_exec(av[2], path);
+	}
 	io[1] = open(av[4], O_CREAT | O_WRONLY);
 	if (io[1] < 0)
 		panic();
-	pipe(fds);
 }
