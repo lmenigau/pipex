@@ -33,7 +33,7 @@ void	prep_exec(char *cmd, char **path)
 {
 	int		i;
 	char	**cmda;
-	char 	*str;
+	char	*str;
 	char	*tmp;
 
 	i = 0;
@@ -45,18 +45,26 @@ void	prep_exec(char *cmd, char **path)
 		tmp = ft_strjoin("/", cmda[0]);
 		str = ft_strjoin(path[i], tmp);
 		free(tmp);
-		execve(str, cmda, environ); 
+		execve(str, cmda, environ);
 		free(str);
 		i++;
 	}
 	printf("%s\n", "command not found");
 }
 
+void	redirect(int in, int out, int fds[2])
+{
+	dup2(out, 1);
+	dup2(in, 0);
+	close(fds[1]);
+	close(fds[0]);
+}
+
 int	main(int ac, char **av)
 {
 	int		fds[2];
 	int		io[2];
-	char 	**path;
+	char	**path;
 
 	if (ac < 5)
 		exit(1);
@@ -66,14 +74,16 @@ int	main(int ac, char **av)
 	pipe(fds);
 	if (!fork())
 	{
-		io[0] = open(av[1], O_RDONLY);
+		io[0] = open(av[1], O_RDONLY | O_CLOEXEC);
 		if (io[0] < 0)
 			panic();
-		dup2(io[0], 0);
-		dup2(fds[0], 1);
+		redirect(io[0], fds[1], fds);
 		prep_exec(av[2], path);
 	}
-	io[1] = open(av[4], O_CREAT | O_WRONLY);
+	io[1] = open(av[4], O_TRUNC | O_CLOEXEC | O_CREAT | O_WRONLY,
+			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	if (io[1] < 0)
 		panic();
+	redirect(fds[0], io[1], fds);
+	prep_exec(av[3], path);
 }

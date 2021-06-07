@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_split.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lomeniga <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/26 04:25:56 by lomeniga          #+#    #+#             */
-/*   Updated: 2021/06/04 18:16:18 by lomeniga         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include <stdlib.h>
 #include "pipex.h"
 
@@ -45,7 +33,7 @@ size_t	copyword(char **arr, char *str, char c)
 			str++;
 		if (str == start)
 			break ;
-		if (!(arr[index] = malloc(str - start + 1)))
+		if ((void)(0), !(arr[index] = malloc(str - start + 1)))
 			return (index);
 		ft_memcpy(arr[index], start, str - start);
 		arr[index++][str - start] = '\0';
@@ -56,9 +44,9 @@ size_t	copyword(char **arr, char *str, char c)
 
 char	**ft_split(char const *s, char c)
 {
-	char	**arr;
-	size_t	wc;
-	size_t	index;
+	char		**arr;
+	size_t		wc;
+	size_t		index;
 
 	wc = countword((char *)s, c);
 	if (!(arr = malloc(sizeof(char *) * (wc + 1))))
