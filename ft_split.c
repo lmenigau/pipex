@@ -33,7 +33,8 @@ size_t	copyword(char **arr, char *str, char c)
 			str++;
 		if (str == start)
 			break ;
-		if ((void)(0), !(arr[index] = malloc(str - start + 1)))
+		arr[index] = malloc(str - start + 1);
+		if (!arr[index])
 			return (index);
 		ft_memcpy(arr[index], start, str - start);
 		arr[index++][str - start] = '\0';
@@ -49,7 +50,8 @@ char	**ft_split(char const *s, char c)
 	size_t		index;
 
 	wc = countword((char *)s, c);
-	if (!(arr = malloc(sizeof(char *) * (wc + 1))))
+	arr = malloc(sizeof(char *) * (wc + 1));
+	if (!arr)
 		return (NULL);
 	if ((index = copyword(arr, (char *)s, c)) < wc)
 	{
