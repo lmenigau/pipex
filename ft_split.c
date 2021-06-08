@@ -53,7 +53,8 @@ char	**ft_split(char const *s, char c)
 	arr = malloc(sizeof(char *) * (wc + 1));
 	if (!arr)
 		return (NULL);
-	if ((index = copyword(arr, (char *)s, c)) < wc)
+	index = copyword(arr, (char *)s, c);
+	if (index < wc)
 	{
 		while (index--)
 			free(arr[index]);

@@ -16,7 +16,7 @@ void	panic(void)
 	exit(1);
 }
 
-int		panic_open(char *path, int flags) 
+int	panic_open(char *path, int flags)
 {
 	int	fd;
 
@@ -26,7 +26,7 @@ int		panic_open(char *path, int flags)
 	return (fd);
 }
 
-int		create_file(char *path, int flags, int mode)
+int	create_file(char *path, int flags, int mode)
 {
 	int	fd;
 
@@ -121,7 +121,7 @@ int	main(int ac, char **av)
 	spawn((t_pair){fd, fds[1]}, fds[0], av[2], path);
 	fd = create_file(av[4], O_TRUNC | O_CLOEXEC | O_CREAT | O_WRONLY,
 			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	spawn((t_pair){fds[0], fd}, fds[1],  av[3], path);
+	spawn((t_pair){fds[0], fd}, fds[1], av[3], path);
 	while (wait_assign_in_control_structure(&pid) > 0)
 		(void)((void)"norme bullshit %d", pid);
 }
