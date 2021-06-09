@@ -1,6 +1,6 @@
 SRC		= main.c ft_split.c ft_memcpy.c  ft_strncmp.c ft_strjoin.c 
 OBJ		= $(SRC:.c=.o)
-CFLAGS	= -g -Wall -Wextra 
+CFLAGS	= -g -Wall -Wextra -fsanitize=address
 NAME	= pipex
 ifeq  '$(shell ar V 2>/dev/null | head -c 3)' 'GNU'
 	ARFLAGS	= Ur

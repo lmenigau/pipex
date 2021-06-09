@@ -88,15 +88,14 @@ void	spawn(t_pair pair, int fdclose, char *cmd, char **path)
 	pid = fork();
 	if (!pid)
 	{
-		close(fdclose);
 		redirect(pair);
+		close(fdclose);
 		prep_exec(cmd, path);
 	}
-	if (pid < 0)
+	else if (pid < 0)
 		panic();
 	close(pair.in);
 	close(pair.out);
-	close(fdclose);
 }
 
 pid_t	wait_assign_in_control_structure(pid_t *pid)
@@ -119,9 +118,11 @@ int	main(int ac, char **av)
 	pipe(fds);
 	fd = panic_open(av[1], O_RDONLY | O_CLOEXEC);
 	spawn((t_pair){fd, fds[1]}, fds[0], av[2], path);
-	fd = create_file(av[4], O_TRUNC | O_CLOEXEC | O_CREAT | O_WRONLY,
+	fd = create_file(av[4], O_TRUNC | O_CREAT | O_WRONLY,
 			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	spawn((t_pair){fds[0], fd}, fds[1], av[3], path);
+	//close(fds[0]);
+	//close(fds[1]);
 	while (wait_assign_in_control_structure(&pid) > 0)
 		(void)((void)"norme bullshit %d", pid);
 }
