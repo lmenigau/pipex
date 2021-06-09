@@ -121,8 +121,6 @@ int	main(int ac, char **av)
 	fd = create_file(av[4], O_TRUNC | O_CREAT | O_WRONLY,
 			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 	spawn((t_pair){fds[0], fd}, fds[1], av[3], path);
-	//close(fds[0]);
-	//close(fds[1]);
 	while (wait_assign_in_control_structure(&pid) > 0)
 		(void)((void)"norme bullshit %d", pid);
 }
