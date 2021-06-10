@@ -1,4 +1,4 @@
-SRC		= main.c ft_split.c ft_memcpy.c  ft_strncmp.c ft_strjoin.c 
+SRC		= main.c ft_split.c ft_memcpy.c  ft_strncmp.c ft_strjoin.c safeutil.c
 OBJ		= $(SRC:.c=.o)
 CFLAGS	= -g -Wall -Wextra -fsanitize=address
 NAME	= pipex
