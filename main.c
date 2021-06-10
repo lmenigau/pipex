@@ -12,7 +12,10 @@ extern char **(environ);
 
 void	panic(void)
 {
+	void *arr[10];
 	perror(NULL);
+	
+	backtrace_symbols_fd(&arr, backtrace(&arr, 10), 2);
 	exit(1);
 }
 
@@ -70,6 +73,7 @@ void	prep_exec(char *cmd, char **path)
 		free(str);
 		i++;
 	}
+	dprintf(2, "lol\n");
 	panic();
 }
 
@@ -103,10 +107,29 @@ pid_t	wait_assign_in_control_structure(pid_t *pid)
 	return (*pid = wait(NULL));
 }
 
+void	pipeline(int ac, char **av, char **path)
+{
+	int		i;
+	int		fd;
+	int		out;
+	int		fds[2];
+
+	fd = panic_open(av[1], O_RDONLY | O_CLOEXEC);
+	i = 2;
+	while (i < ac - 2)
+	{
+		pipe(fds);
+		spawn((t_pair){fd, fds[1]}, fds[0], av[i], path);
+		fd = fds[0];
+		i++;
+	}
+	out = create_file(av[ac - 1], O_TRUNC | O_CREAT | O_WRONLY,
+			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+	spawn((t_pair){fd, out}, fds[1], av[i], path);
+}
+
 int	main(int ac, char **av)
 {
-	int		fds[2];
-	int		fd;
 	int		pid;
 	char	**path;
 
@@ -115,12 +138,8 @@ int	main(int ac, char **av)
 	path = ft_split(find_path(), ':');
 	if (!path)
 		panic();
-	pipe(fds);
-	fd = panic_open(av[1], O_RDONLY | O_CLOEXEC);
-	spawn((t_pair){fd, fds[1]}, fds[0], av[2], path);
-	fd = create_file(av[4], O_TRUNC | O_CREAT | O_WRONLY,
-			S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-	spawn((t_pair){fds[0], fd}, fds[1], av[3], path);
+	pipeline(ac, av, path);
 	while (wait_assign_in_control_structure(&pid) > 0)
 		(void)((void)"norme bullshit %d", pid);
+	exit(0);
 }
